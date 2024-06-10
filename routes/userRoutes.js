@@ -7,6 +7,37 @@ const router = Router();
 
 // TODO: Implement route controllers for user
 
+router.get(
+  "/",
+  (req, res, next) => {
+    try {
+      const users = userService.getAllUsers();
+      res.data = users;
+    } catch (err) {
+      res.err = err;
+    } finally {
+      next();
+    }
+  },
+  responseMiddleware
+);
+
+router.get(
+  "/:id",
+  (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const user = userService.getUserById(id);
+      res.data = user;
+    } catch (err) {
+      res.err = err;
+    } finally {
+      next();
+    }
+  },
+  responseMiddleware
+);
+
 router.post(
   "/",
   createUserValid,
@@ -31,6 +62,22 @@ router.patch(
       const { id } = req.params;
       const updatedUser = userService.updateUser(id, req.body);
       res.data = updatedUser;
+    } catch (err) {
+      res.err = err;
+    } finally {
+      next();
+    }
+  },
+  responseMiddleware
+);
+
+router.delete(
+  "/:id",
+  (req, res, next) => {
+    try {
+      const { id } = req.params;
+      userService.deleteUser(id);
+      res.data = { message: "User deleted successfully!" };
     } catch (err) {
       res.err = err;
     } finally {

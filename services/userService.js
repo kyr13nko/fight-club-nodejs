@@ -3,18 +3,33 @@ import { userRepository } from "../repositories/userRepository.js";
 class UserService {
   // TODO: Implement methods to work with user
 
+  getAllUsers() {
+    return userRepository.getAll();
+  }
+
+  getUserById(id) {
+    const user = userRepository.getOne({ id });
+    if (!user) {
+      throw Error("User not found!");
+    }
+    return user;
+  }
+
   createUser(userData) {
-    // Перевірка на унікальність email та phoneNumber
     const existingUser = userRepository.getOne({ email: userData.email });
     if (existingUser) {
-      throw Error("User with this email already exists");
-    }
-    const existingPhoneNumberUser = userRepository.getOne({ phoneNumber: userData.phoneNumber });
-    if (existingPhoneNumberUser) {
-      throw Error("User with this phone number already exists");
+      const error = new Error("User with this email already exists");
+      error.status = 400;
+      throw error;
     }
 
-    // Створення нового користувача
+    const existingPhoneNumberUser = userRepository.getOne({ phoneNumber: userData.phoneNumber });
+    if (existingPhoneNumberUser) {
+      const error = new Error("User with this phone number already exists");
+      error.status = 400;
+      throw error;
+    }
+
     const user = userRepository.create(userData);
     return user;
   }
@@ -29,6 +44,14 @@ class UserService {
     // Оновлення користувача
     const updatedUser = userRepository.update(id, userDataToUpdate);
     return updatedUser;
+  }
+
+  deleteUser(id) {
+    const user = userRepository.getOne({ id });
+    if (!user) {
+      throw Error("User not found!");
+    }
+    userRepository.delete(id);
   }
 
   search(search) {

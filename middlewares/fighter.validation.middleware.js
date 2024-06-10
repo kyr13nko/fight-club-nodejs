@@ -19,7 +19,7 @@ const createFighterValid = (req, res, next) => {
 };
 
 const updateFighterValid = (req, res, next) => {
-  // TODO: Implement validatior for FIGHTER entity during update
+  // TODO: Implement validator for fighter entity during update
 
   const { name, power, defense } = req.body;
 
@@ -32,15 +32,15 @@ const updateFighterValid = (req, res, next) => {
 
   // Валідація числових полів
   if (
-    (power && isNaN(power)) ||
-    (defense && isNaN(defense)) ||
-    (power && (power < 1 || power > 100)) ||
-    (defense && (defense < 1 || defense > 10))
+    (power !== undefined && (isNaN(power) || power < 1 || power > 100)) ||
+    (defense !== undefined && (isNaN(defense) || defense < 1 || defense > 10))
   ) {
     return res.status(400).json({ error: true, message: "Invalid value for power or defense" });
   }
 
   next();
 };
+
+export { updateFighterValid };
 
 export { createFighterValid, updateFighterValid };

@@ -1,30 +1,42 @@
 import { fighterRepository } from "../repositories/fighterRepository.js";
 
 class FighterService {
-  // TODO: Implement methods to work with fighters
+  getAllFighters() {
+    return fighterRepository.getAll();
+  }
+
+  getFighterById(id) {
+    return fighterRepository.getOne({ id });
+  }
 
   createFighter(fighterData) {
-    // Перевірка на унікальність імені
     const existingFighter = fighterRepository.getOne({ name: fighterData.name.toLowerCase() });
     if (existingFighter) {
       throw Error("Fighter with this name already exists");
     }
-
-    // Створення нового бійця
+    // Значення health встановлюється за замовчуванням на 85
+    fighterData.health = 85;
     const fighter = fighterRepository.create(fighterData);
     return fighter;
   }
 
   updateFighter(id, fighterDataToUpdate) {
-    // Перевірка наявності бійця
     const existingFighter = fighterRepository.getOne({ id });
     if (!existingFighter) {
       throw Error("Fighter not found");
     }
-
-    // Оновлення бійця
+    // Збереження health при оновленні
+    fighterDataToUpdate.health = existingFighter.health;
     const updatedFighter = fighterRepository.update(id, fighterDataToUpdate);
     return updatedFighter;
+  }
+
+  deleteFighter(id) {
+    const existingFighter = fighterRepository.getOne({ id });
+    if (!existingFighter) {
+      throw Error("Fighter not found");
+    }
+    return fighterRepository.delete(id);
   }
 }
 

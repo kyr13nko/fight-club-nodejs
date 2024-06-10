@@ -1,13 +1,18 @@
 import { USER } from "../models/user.js";
 
 const createUserValid = (req, res, next) => {
-  // TODO: Implement validatior for USER entity during creation
-
-  const { firstName, lastName, email, phoneNumber, password } = req.body;
+  const { id, createdAt, updatedAt, ...userData } = req.body;
 
   // Перевірка наявності всіх обов'язкових полів
+  const { firstName, lastName, email, phoneNumber, password } = userData;
+
   if (!firstName || !lastName || !email || !phoneNumber || !password) {
     return res.status(400).json({ error: true, message: "User entity to create isn’t valid" });
+  }
+
+  // Перевірка, що id не передається в тілі запиту
+  if (id) {
+    return res.status(400).json({ error: true, message: "Id should not be provided" });
   }
 
   // Валідація формату email
@@ -27,13 +32,25 @@ const createUserValid = (req, res, next) => {
       .json({ error: true, message: "Password must be at least 3 characters long" });
   }
 
+  // Перевірка на наявність зайвих полів
+  const allowedFields = Object.keys(USER).filter(
+    (field) => field !== "id" && field !== "createdAt" && field !== "updatedAt"
+  );
+  const invalidFields = Object.keys(userData).filter((field) => !allowedFields.includes(field));
+
+  if (invalidFields.length > 0) {
+    return res
+      .status(400)
+      .json({ error: true, message: `Invalid fields: ${invalidFields.join(", ")}` });
+  }
+
   next();
 };
 
 const updateUserValid = (req, res, next) => {
-  // TODO: Implement validatior for user entity during update
+  const { id, createdAt, updatedAt, ...userData } = req.body;
 
-  const { firstName, lastName, email, phoneNumber, password } = req.body;
+  const { firstName, lastName, email, phoneNumber, password } = userData;
 
   // Перевірка наявності хоча б одного поля для оновлення
   if (!firstName && !lastName && !email && !phoneNumber && !password) {

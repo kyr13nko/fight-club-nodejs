@@ -4,7 +4,9 @@ const USER = {
   lastName: "",
   email: "",
   phoneNumber: "",
-  password: "", // min 3 symbols
+  password: "", // мінімум 3 символи
+  createdAt: "",
+  updatedAt: "",
 };
 
 export { USER };
